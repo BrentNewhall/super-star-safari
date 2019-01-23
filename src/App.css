@@ -19,10 +19,14 @@
   position: absolute;
 }
 
+.enemyShip {
+  position: absolute;
+}
+
 .sidebar {
   position: absolute;
-  left: 1000px;
-  top: 100px;
+  left: 10px;
+  top: 64px;
   background-color: black;
   color: white;
   padding: 5px;

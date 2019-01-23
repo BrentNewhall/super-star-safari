@@ -18,7 +18,11 @@ class App extends Component {
       date: 2300,
       timeLeft: 20,
     }
-    this.shipLocation = { x: 240, y: 240 };
+    this.enemies = [
+      { x: 500, y: 500, qx: 2, qy: 2 },
+      { x: 500, y: 500, qx: 1, qy: 1 },
+    ]
+    this.shipLocation = { x: 240, y: 240, qx: 1, qy: 1 };
     this.shipMoving = false;
     this.shipDestination = { x: 0, y: 0 };
     this.spaceClicked = this.spaceClicked.bind( this );
@@ -66,6 +70,15 @@ class App extends Component {
       left: this.shipLocation.x,
       top: this.shipLocation.y,
     }
+    let enemies = this.enemies.map( (enemy) => {
+      if( enemy.qx === this.shipLocation.qx  &&  enemy.qy === this.shipLocation.qy ) {
+        const enemyState = {
+          left: enemy.x,
+          top: enemy.y,
+        }
+        return <img src='/images/speedship.png' alt='enemy' className='enemyShip' style={enemyState} />
+      }
+    })
     let ship = <img src='/images/bgbattleship.png' alt='player'
         className='playerShip' style={shipState} />;
     return (
@@ -82,8 +95,10 @@ class App extends Component {
           Enemies left: {this.state.enemies}<br />
           Date: {this.state.date}<br />
           Time Left: {this.state.timeLeft}<br />
+          <button>Lasers</button> <button>Torpedo</button> <button>Warp</button>
         </div>
         {ship}
+        {enemies}
       </div>
     );
   }
