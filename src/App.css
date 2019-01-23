@@ -1,15 +1,12 @@
 .App {
-  text-align: center;
-}
-
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
+  text-align: left;
+  background-image: url(/images/ce-starfield-background-1.jpg);
+  height: 1024px;
 }
 
 .App-header {
   background-color: #282c34;
-  min-height: 100vh;
+  height: 36pt;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -18,15 +15,8 @@
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.playerShip {
+  position: absolute;
+  left: 240px;
+  top: 240px;
 }
