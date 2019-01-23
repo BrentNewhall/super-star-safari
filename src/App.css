@@ -20,3 +20,12 @@
   left: 240px;
   top: 240px;
 }
+
+.sidebar {
+  position: absolute;
+  left: 1000px;
+  top: 100px;
+  background-color: black;
+  color: white;
+  padding: 5px;
+}
