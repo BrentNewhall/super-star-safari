@@ -30,4 +30,9 @@
   background-color: black;
   color: white;
   padding: 5px;
+  z-index: 100;
+}
+
+button:disabled {
+  color: gray;
 }

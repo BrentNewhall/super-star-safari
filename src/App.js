@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import './App.css';
 
-const ACTION_FRAME_TIME = 10;
+const FRAME_TIME = 10;
 const SHIP_SPEED = 1;
+const ACTION_NONE = 0;
+const ACTION_LASERS = 1;
+const ACTION_TORPEDOES = 2;
 
 class App extends Component {
   constructor( props ) {
@@ -17,24 +20,57 @@ class App extends Component {
       enemies: 20,
       date: 2300,
       timeLeft: 20,
+      lasersDisabled: false,
+      torpedoesDisabled: false,
     }
     this.enemies = [
-      { x: 500, y: 500, qx: 2, qy: 2 },
-      { x: 500, y: 500, qx: 1, qy: 1 },
+      { x: 500, y: 500, qx: 2, qy: 2, shields: 300 },
+      { x: 500, y: 500, qx: 1, qy: 1, shields: 300 },
     ]
+    this.action = ACTION_NONE;
     this.shipLocation = { x: 240, y: 240, qx: 1, qy: 1 };
     this.shipMoving = false;
     this.shipDestination = { x: 0, y: 0 };
     this.spaceClicked = this.spaceClicked.bind( this );
+    this.lasersClicked = this.lasersClicked.bind( this );
     this.movePlayerShip = this.movePlayerShip.bind( this );
   }
 
   spaceClicked( event ) {
+    // Ignore if clicking on sidebar or action is pending
+    if( event.pageX < 200  &&  event.pageY < 250 )
+      return;
+    if( this.action !== ACTION_NONE )
+      return;
     console.log( event.pageX + ", " + event.pageY );
     this.shipDestination.x = event.pageX - 65;
     this.shipDestination.y = event.pageY - 65;
     this.shipMoving = true;
-    setTimeout( this.movePlayerShip, ACTION_FRAME_TIME );
+    setTimeout( this.movePlayerShip, FRAME_TIME );
+  }
+
+  lasersClicked(e) {
+    this.action = ACTION_LASERS;
+    this.setState( { lasersDisabled: true } );
+  }
+
+  enemyClicked(e) {
+    if( this.action === ACTION_LASERS ) {
+      let laserAmount = 200;
+      if( this.state.energy < laserAmount ) {
+        laserAmount = this.state.energy;
+        this.setState( { energy: 0 } );
+      }
+      else {
+        this.setState( { energy: this.state.energy - laserAmount } );
+      }
+      this.enemies.forEach( (enemy) => {
+        if( enemy.qx === this.shipLocation.qx  &&  enemy.qy === this.shipLocation.qy ) {
+          enemy.shields -= laserAmount;
+        }
+      })
+      this.setState( { lasersDisabled: false } );
+    }
   }
 
   movePlayerShip() {
@@ -60,7 +96,7 @@ class App extends Component {
     }
     else {
       //this.forceUpdate();
-      setTimeout( this.movePlayerShip, ACTION_FRAME_TIME );
+      setTimeout( this.movePlayerShip, FRAME_TIME );
     }
   }
 
@@ -71,12 +107,13 @@ class App extends Component {
       top: this.shipLocation.y,
     }
     let enemies = this.enemies.map( (enemy) => {
-      if( enemy.qx === this.shipLocation.qx  &&  enemy.qy === this.shipLocation.qy ) {
+      if( enemy.qx === this.shipLocation.qx  &&
+          enemy.qy === this.shipLocation.qy  &&  enemy.shields > 0 ) {
         const enemyState = {
           left: enemy.x,
           top: enemy.y,
         }
-        return <img src='/images/speedship.png' alt='enemy' className='enemyShip' style={enemyState} />
+        return <img src='/images/speedship.png' alt='enemy' className='enemyShip' style={enemyState} onClick={(e) => this.enemyClicked(e)} />
       }
     })
     let ship = <img src='/images/bgbattleship.png' alt='player'
@@ -95,7 +132,7 @@ class App extends Component {
           Enemies left: {this.state.enemies}<br />
           Date: {this.state.date}<br />
           Time Left: {this.state.timeLeft}<br />
-          <button>Lasers</button> <button>Torpedo</button> <button>Warp</button>
+          <button onClick={(e) => this.lasersClicked(e)} disabled={this.state.lasersDisabled}>Lasers</button> <button>Torpedo</button> <button>Warp</button>
         </div>
         {ship}
         {enemies}
