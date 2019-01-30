@@ -6,6 +6,7 @@ const SHIP_SPEED = 1;
 const ACTION_NONE = 0;
 const ACTION_LASERS = 1;
 const ACTION_TORPEDOES = 2;
+const ACTION_WARP = 3;
 
 class App extends Component {
   constructor( props ) {
@@ -34,12 +35,13 @@ class App extends Component {
     this.spaceClicked = this.spaceClicked.bind( this );
     this.lasersClicked = this.lasersClicked.bind( this );
     this.torpedoesClicked = this.torpedoesClicked.bind( this );
+    this.quadrantClicked = this.quadrantClicked.bind( this );
     this.movePlayerShip = this.movePlayerShip.bind( this );
   }
 
   spaceClicked( event ) {
     // Ignore if clicking on sidebar or action is pending
-    if( event.pageX < 200  &&  event.pageY < 250 )
+    if( event.pageX < 250  &&  event.pageY < 250 )
       return;
     if( this.action !== ACTION_NONE )
       return;
@@ -58,6 +60,16 @@ class App extends Component {
   torpedoesClicked(e) {
     this.action = ACTION_TORPEDOES;
     this.setState( { torpedoesDisabled: true } );
+  }
+
+  warpClicked(e) {
+    this.action = ACTION_WARP;
+    this.setState( { warpDisabled: true } );
+  }
+
+  quadrantClicked( row, col ) {
+    this.action = ACTION_NONE;
+    //this.setState( { warpDisabled: false } );
   }
 
   enemyClicked(e) {
@@ -123,6 +135,10 @@ class App extends Component {
       left: this.shipLocation.x,
       top: this.shipLocation.y,
     }
+    let warpState = { visibility: 'hidden' };
+    if( this.state.warpDisabled ) {
+      warpState = { visibility: 'visible' };
+    }
     let enemies = this.enemies.map( (enemy) => {
       if( enemy.qx === this.shipLocation.qx  &&
           enemy.qy === this.shipLocation.qy  &&  enemy.shields > 0 ) {
@@ -140,6 +156,18 @@ class App extends Component {
         <header className="App-header">
           Super Star Safari
         </header>
+        <div className="starmap" style={warpState}>
+          <div className="flex-container">
+            <div className="col"><button onClick={this.quadrantClicked(1,1)}>Antares I</button></div>
+            <div className="col"><button onClick={this.quadrantClicked(1,1)}>Antares II</button></div>
+            <div className="col"><button onClick={this.quadrantClicked(1,1)}>Antares III</button></div>
+            <div className="col"><button onClick={this.quadrantClicked(1,1)}>Antares IV</button></div>
+            <div className="col"><button onClick={this.quadrantClicked(1,1)}>Sirius I</button></div>
+            <div className="col"><button onClick={this.quadrantClicked(1,1)}>Sirius II</button></div>
+            <div className="col"><button onClick={this.quadrantClicked(1,1)}>Sirius III</button></div>
+            <div className="col"><button onClick={this.quadrantClicked(1,1)}>Sirius IV</button></div>
+          </div>
+        </div>
         <div className="sidebar">
           Condition: {this.state.shipCondition}<br />
           Life Support: {this.state.lifeSupport}<br />
@@ -151,7 +179,7 @@ class App extends Component {
           Time Left: {this.state.timeLeft}<br />
           <button onClick={(e) => this.lasersClicked(e)} disabled={this.state.lasersDisabled}>Lasers</button>
           <button onClick={(e) => this.torpedoesClicked(e)} disabled={this.state.torpedoesDisabled}>Torpedo</button>
-          <button>Warp</button>
+          <button onClick={(e) => this.warpClicked(e)} disabled={this.state.warpDisabled}>Warp</button>
         </div>
         {ship}
         {enemies}

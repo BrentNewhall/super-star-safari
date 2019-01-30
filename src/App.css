@@ -33,6 +33,14 @@
   z-index: 100;
 }
 
+.starmap {
+  position: absolute;
+  left: 200px;
+  top: 200px;
+  visibility: hidden;
+  z-index: 200;
+}
+
 button:disabled {
   color: gray;
 }
