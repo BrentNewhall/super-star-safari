@@ -86,6 +86,7 @@ class App extends Component {
           }
         })
       }
+      this.setState( { torpedoesDisabled: false } );
     }
   }
 
