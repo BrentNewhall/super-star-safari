@@ -33,6 +33,7 @@ class App extends Component {
     this.shipDestination = { x: 0, y: 0 };
     this.spaceClicked = this.spaceClicked.bind( this );
     this.lasersClicked = this.lasersClicked.bind( this );
+    this.torpedoesClicked = this.torpedoesClicked.bind( this );
     this.movePlayerShip = this.movePlayerShip.bind( this );
   }
 
@@ -54,6 +55,11 @@ class App extends Component {
     this.setState( { lasersDisabled: true } );
   }
 
+  torpedoesClicked(e) {
+    this.action = ACTION_TORPEDOES;
+    this.setState( { torpedoesDisabled: true } );
+  }
+
   enemyClicked(e) {
     if( this.action === ACTION_LASERS ) {
       let laserAmount = 200;
@@ -70,6 +76,16 @@ class App extends Component {
         }
       })
       this.setState( { lasersDisabled: false } );
+    }
+    else if( this.action === ACTION_TORPEDOES ) {
+      if( this.state.torpedoes > 0 ) {
+        this.setState( { torpedoes: this.state.torpedoes - 1 } );
+        this.enemies.forEach( (enemy) => {
+          if( enemy.qx === this.shipLocation.qx  &&  enemy.qy === this.shipLocation.qy ) {
+            enemy.shields -= 500;
+          }
+        })
+      }
     }
   }
 
@@ -132,7 +148,9 @@ class App extends Component {
           Enemies left: {this.state.enemies}<br />
           Date: {this.state.date}<br />
           Time Left: {this.state.timeLeft}<br />
-          <button onClick={(e) => this.lasersClicked(e)} disabled={this.state.lasersDisabled}>Lasers</button> <button>Torpedo</button> <button>Warp</button>
+          <button onClick={(e) => this.lasersClicked(e)} disabled={this.state.lasersDisabled}>Lasers</button>
+          <button onClick={(e) => this.torpedoesClicked(e)} disabled={this.state.torpedoesDisabled}>Torpedo</button>
+          <button>Warp</button>
         </div>
         {ship}
         {enemies}
