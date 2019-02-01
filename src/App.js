@@ -154,13 +154,12 @@ class App extends Component {
       else
         return '';
     })
-    let starmap = [];
-    for( let row = 1; row <= 8; row++ ) {
+    let starmap = [1,2,3,4,5,6,7,7].map( row => {
       let cols = [1,2,3,4,5,6,7,8].map( col => {
         return <div className="col"><button onClick={() => this.quadrantClicked(row,col)}>{row},{col}</button></div>;
       });
-      starmap.push( <div className="row">{cols}</div> );
-    }
+      return <div className="row">{cols}</div>;
+    });
     let ship = <img src='/images/bgbattleship.png' alt='player'
         className='playerShip' style={shipState} />;
     return (
