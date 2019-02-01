@@ -35,10 +35,18 @@
 
 .starmap {
   position: absolute;
-  left: 200px;
-  top: 200px;
+  left: 10px;
+  top: 300px;
   visibility: hidden;
   z-index: 200;
+  display: flex;
+  flex-direction: column;
+  width: 500px;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
 }
 
 button:disabled {

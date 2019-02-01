@@ -41,7 +41,7 @@ class App extends Component {
 
   spaceClicked( event ) {
     // Ignore if clicking on sidebar or action is pending
-    if( event.pageX < 250  &&  event.pageY < 250 )
+    if( event.pageX < 250 )
       return;
     if( this.action !== ACTION_NONE )
       return;
@@ -68,8 +68,11 @@ class App extends Component {
   }
 
   quadrantClicked( row, col ) {
+    this.shipLocation.qx = col;
+    this.shipLocation.qy = row;
     this.action = ACTION_NONE;
-    //this.setState( { warpDisabled: false } );
+    //this.forceUpdate();
+    this.setState( { warpDisabled: false } );
   }
 
   enemyClicked(e) {
@@ -148,7 +151,16 @@ class App extends Component {
         }
         return <img src='/images/speedship.png' alt='enemy' className='enemyShip' style={enemyState} onClick={(e) => this.enemyClicked(e)} />
       }
+      else
+        return '';
     })
+    let starmap = [];
+    for( let row = 1; row <= 8; row++ ) {
+      let cols = [1,2,3,4,5,6,7,8].map( col => {
+        return <div className="col"><button onClick={() => this.quadrantClicked(row,col)}>{row},{col}</button></div>;
+      });
+      starmap.push( <div className="row">{cols}</div> );
+    }
     let ship = <img src='/images/bgbattleship.png' alt='player'
         className='playerShip' style={shipState} />;
     return (
@@ -157,16 +169,7 @@ class App extends Component {
           Super Star Safari
         </header>
         <div className="starmap" style={warpState}>
-          <div className="flex-container">
-            <div className="col"><button onClick={this.quadrantClicked(1,1)}>Antares I</button></div>
-            <div className="col"><button onClick={this.quadrantClicked(1,1)}>Antares II</button></div>
-            <div className="col"><button onClick={this.quadrantClicked(1,1)}>Antares III</button></div>
-            <div className="col"><button onClick={this.quadrantClicked(1,1)}>Antares IV</button></div>
-            <div className="col"><button onClick={this.quadrantClicked(1,1)}>Sirius I</button></div>
-            <div className="col"><button onClick={this.quadrantClicked(1,1)}>Sirius II</button></div>
-            <div className="col"><button onClick={this.quadrantClicked(1,1)}>Sirius III</button></div>
-            <div className="col"><button onClick={this.quadrantClicked(1,1)}>Sirius IV</button></div>
-          </div>
+          {starmap}
         </div>
         <div className="sidebar">
           Condition: {this.state.shipCondition}<br />
