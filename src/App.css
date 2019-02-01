@@ -44,9 +44,35 @@
   width: 500px;
 }
 
+.scan {
+  position: absolute;
+  left: 10px;
+  top: 300px;
+}
+
 .row {
   display: flex;
   flex-direction: row;
+}
+
+.warp-cell {
+  color: white;
+  text-align: center;
+  width: 50px;
+}
+
+.player-cell {
+  color: yellow;
+}
+.player-cell:before {
+  content: "(";
+}
+.player-cell:after {
+  content: ")";
+}
+
+.cannot-warp {
+  color: gray;
 }
 
 button:disabled {

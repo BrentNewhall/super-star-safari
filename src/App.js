@@ -21,6 +21,7 @@ class App extends Component {
       enemies: 20,
       date: 2300,
       timeLeft: 20,
+      showScan: false,
       lasersDisabled: false,
       torpedoesDisabled: false,
     }
@@ -36,6 +37,9 @@ class App extends Component {
     this.lasersClicked = this.lasersClicked.bind( this );
     this.torpedoesClicked = this.torpedoesClicked.bind( this );
     this.quadrantClicked = this.quadrantClicked.bind( this );
+    this.scanClicked = this.scanClicked.bind( this );
+    this.generateScan = this.generateScan.bind( this );
+    this.findEnemies = this.findEnemies.bind( this );
     this.movePlayerShip = this.movePlayerShip.bind( this );
   }
 
@@ -67,12 +71,59 @@ class App extends Component {
     this.setState( { warpDisabled: true } );
   }
 
+  /*
+   * Called when user clicks on a cell in the warp map. Moves player ship to
+   * new quadrant.
+   */
   quadrantClicked( row, col ) {
     this.shipLocation.qx = col;
     this.shipLocation.qy = row;
     this.action = ACTION_NONE;
-    //this.forceUpdate();
-    this.setState( { warpDisabled: false } );
+    this.setState( { warpDisabled: false, showScan: false } );
+  }
+
+  /*
+   * Displays scan of nearby quadrants
+   */
+  scanClicked(e) {
+    this.setState( { showScan: ! this.state.showScan } );
+  }
+
+  /*
+   * Returns a scan
+   */
+  generateScan() {
+    //let scan = [];
+    const rows = [this.shipLocation.qy - 1, this.shipLocation.qy, this.shipLocation.qy + 1];
+    const cols = [this.shipLocation.qx - 1, this.shipLocation.qx, this.shipLocation.qx + 1];
+    let scan = rows.map( (row) => {
+      let result = cols.map( (col) => {
+        if( row >= 1  &&  row <= 8  &&  col >= 1  &&  col <= 8 ) {
+          const numEnemies = this.findEnemies( row, col );
+          if( row === this.shipLocation.qy  &&  col === this.shipLocation.qx ) {
+            return <div className="col warp-cell player-cell">{numEnemies}</div>
+          }
+          else {
+            return <div className="col warp-cell">{numEnemies}</div>
+          }
+        }
+        else {
+          return <div className="col warp-cell cannot-warp">-</div>
+        }
+      });
+      return <div className="row">{result}</div>;
+    });
+    return scan;
+  }
+
+  findEnemies( row, col ) {
+    const filtered = this.enemies.filter( enemy => {
+      if( enemy.qx === col  &&  enemy.qy === row ) {
+        return true;
+      }
+      return false;
+    });
+    return filtered.length;
   }
 
   enemyClicked(e) {
@@ -153,8 +204,13 @@ class App extends Component {
       }
       else
         return '';
-    })
-    let starmap = [1,2,3,4,5,6,7,7].map( row => {
+    });
+    let scan = [];
+    if( this.state.showScan ) {
+      scan = this.generateScan();
+    }
+    // Generate star map
+    let starmap = [1,2,3,4,5,6,7,8].map( row => {
       let cols = [1,2,3,4,5,6,7,8].map( col => {
         return <div className="col"><button onClick={() => this.quadrantClicked(row,col)}>{row},{col}</button></div>;
       });
@@ -170,6 +226,9 @@ class App extends Component {
         <div className="starmap" style={warpState}>
           {starmap}
         </div>
+        <div className="scan">
+          {scan}
+        </div>
         <div className="sidebar">
           Condition: {this.state.shipCondition}<br />
           Life Support: {this.state.lifeSupport}<br />
@@ -181,7 +240,8 @@ class App extends Component {
           Time Left: {this.state.timeLeft}<br />
           <button onClick={(e) => this.lasersClicked(e)} disabled={this.state.lasersDisabled}>Lasers</button>
           <button onClick={(e) => this.torpedoesClicked(e)} disabled={this.state.torpedoesDisabled}>Torpedo</button>
-          <button onClick={(e) => this.warpClicked(e)} disabled={this.state.warpDisabled}>Warp</button>
+          <button onClick={(e) => this.warpClicked(e)} disabled={this.state.warpDisabled}>Warp</button><br />
+          <button onClick={(e) => this.scanClicked(e)} disabled={this.state.scanDisabled}>Scan</button>
         </div>
         {ship}
         {enemies}
