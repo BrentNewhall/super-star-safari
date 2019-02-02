@@ -225,7 +225,11 @@ class App extends Component {
     // Generate star map
     let starmap = [1,2,3,4,5,6,7,8].map( row => {
       let cols = [1,2,3,4,5,6,7,8].map( col => {
-        return <div className="col"><button onClick={() => this.quadrantClicked(row,col)}>{row},{col}</button></div>;
+        let style = {};
+        if( this.shipLocation.qx === col  &&  this.shipLocation.qy === row ) {
+          style = { color: 'red' };
+        }
+        return <div className="col"><button style={style} onClick={() => this.quadrantClicked(row,col)}>{row},{col}</button></div>;
       });
       return <div className="row">{cols}</div>;
     });
