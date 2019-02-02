@@ -53,6 +53,7 @@ class App extends Component {
     this.scanClicked = this.scanClicked.bind( this );
     this.generateScan = this.generateScan.bind( this );
     this.isEnemyDestroyed = this.isEnemyDestroyed.bind( this );
+    this.removeExplosion = this.removeExplosion.bind( this );
     this.findEnemies = this.findEnemies.bind( this );
     this.movePlayerShip = this.movePlayerShip.bind( this );
   }
@@ -146,7 +147,13 @@ class App extends Component {
       this.explosions.push( { x: enemy.x, y: enemy.y } );
       console.log( this.explosions );
       this.setState( { enemies: this.state.enemies - 1 } );
+      setTimeout( this.removeExplosion, 500 );
     }
+  }
+
+  removeExplosion() {
+    this.explosions.pop();
+    this.forceUpdate();
   }
 
   enemyClicked(e) {
