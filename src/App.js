@@ -25,17 +25,23 @@ class App extends Component {
       lasersDisabled: false,
       torpedoesDisabled: false,
     }
-    this.enemies = [
-      /* { x: 500, y: 500, qx: 2, qy: 2, shields: 300 },
-      { x: 500, y: 500, qx: 1, qy: 1, shields: 300 }, */
-    ];
+    this.enemies = [];
     for( let index = 0; index < this.state.enemies; index++ ) {
-      const x = parseInt(Math.random() * 750 + 300);
-      const y = parseInt(Math.random() * 750 + 300);
+      const x = parseInt(Math.random() * 600 + 300);
+      const y = parseInt(Math.random() * 600 + 300);
       const qx = parseInt(Math.random() * 8 + 1);
       const qy = parseInt(Math.random() * 8 + 1);
       this.enemies.push( { x, y, qx, qy, shields: 300 } );
     }
+    this.starbases = [];
+    for ( let index = 0; index < 5; index++ ) {
+      const x = parseInt(Math.random() * 600 + 300);
+      const y = parseInt(Math.random() * 600 + 300);
+      const qx = parseInt(Math.random() * 8 + 1);
+      const qy = parseInt(Math.random() * 8 + 1);
+      this.starbases.push( { x, y, qx, qy, shields: 500 } );
+    }
+    this.explosions = [];
     this.action = ACTION_NONE;
     this.shipLocation = { x: 240, y: 240, qx: 1, qy: 1 };
     this.shipMoving = false;
@@ -46,6 +52,7 @@ class App extends Component {
     this.quadrantClicked = this.quadrantClicked.bind( this );
     this.scanClicked = this.scanClicked.bind( this );
     this.generateScan = this.generateScan.bind( this );
+    this.isEnemyDestroyed = this.isEnemyDestroyed.bind( this );
     this.findEnemies = this.findEnemies.bind( this );
     this.movePlayerShip = this.movePlayerShip.bind( this );
   }
@@ -56,7 +63,6 @@ class App extends Component {
       return;
     if( this.action !== ACTION_NONE )
       return;
-    console.log( event.pageX + ", " + event.pageY );
     this.shipDestination.x = event.pageX - 65;
     this.shipDestination.y = event.pageY - 65;
     this.shipMoving = true;
@@ -133,6 +139,16 @@ class App extends Component {
     return filtered.length;
   }
 
+  isEnemyDestroyed( enemy ) {
+    console.log( "isEnemyDestroyed()" );
+    if( enemy.shields <= 0 ) {
+      console.log( "yes!" );
+      this.explosions.push( { x: enemy.x, y: enemy.y } );
+      console.log( this.explosions );
+      this.setState( { enemies: this.state.enemies - 1 } );
+    }
+  }
+
   enemyClicked(e) {
     if( this.action === ACTION_LASERS ) {
       let laserAmount = 200;
@@ -146,9 +162,7 @@ class App extends Component {
       this.enemies.forEach( (enemy) => {
         if( enemy.qx === this.shipLocation.qx  &&  enemy.qy === this.shipLocation.qy ) {
           enemy.shields -= laserAmount;
-          if( enemy.shields <= 0 ) {
-            this.setState( { enemies: this.state.enemies - 1 } );
-          }
+          this.isEnemyDestroyed( enemy );
         }
       })
       this.setState( { lasersDisabled: false } );
@@ -159,9 +173,7 @@ class App extends Component {
         this.enemies.forEach( (enemy) => {
           if( enemy.qx === this.shipLocation.qx  &&  enemy.qy === this.shipLocation.qy ) {
             enemy.shields -= 500;
-            if( enemy.shields <= 0 ) {
-              this.setState( { enemies: this.state.enemies - 1 } );
-            }
+            this.isEnemyDestroyed( enemy );
           }
         })
       }
@@ -197,6 +209,11 @@ class App extends Component {
   }
 
   render() {
+    console.log( "render(). explosions: " , this.explosions );
+    const explosions = this.explosions.map( (explosion) => {
+      const style = { position: 'absolute', left: explosion.x, top: explosion.y };
+      return <img src="/images/explosion1.png" style={style} alt="explosion" key={"explosion"+explosion.x+explosion.y} />;
+    });
     const shieldState = (this.state.shieldsUp) ? 'UP' : 'DOWN';
     const shipState = {
       left: this.shipLocation.x,
@@ -262,6 +279,7 @@ class App extends Component {
         </div>
         {ship}
         {enemies}
+        {explosions}
       </div>
     );
   }
