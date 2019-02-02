@@ -20,7 +20,7 @@ class App extends Component {
       shields: 100,
       enemies: 20,
       date: 2300,
-      timeLeft: 20,
+      timeLeft: 50,
       showScan: false,
       lasersDisabled: false,
       torpedoesDisabled: false,
@@ -93,7 +93,12 @@ class App extends Component {
     this.shipLocation.qx = col;
     this.shipLocation.qy = row;
     this.action = ACTION_NONE;
-    this.setState( { warpDisabled: false, showScan: false } );
+    this.setState( {
+      warpDisabled: false,
+      showScan: false,
+      date: this.state.date + 1,
+      timeLeft: this.state.timeLeft - 1,
+    } );
   }
 
   /*
