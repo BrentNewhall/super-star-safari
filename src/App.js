@@ -26,9 +26,16 @@ class App extends Component {
       torpedoesDisabled: false,
     }
     this.enemies = [
-      { x: 500, y: 500, qx: 2, qy: 2, shields: 300 },
-      { x: 500, y: 500, qx: 1, qy: 1, shields: 300 },
-    ]
+      /* { x: 500, y: 500, qx: 2, qy: 2, shields: 300 },
+      { x: 500, y: 500, qx: 1, qy: 1, shields: 300 }, */
+    ];
+    for( let index = 0; index < this.state.enemies; index++ ) {
+      const x = parseInt(Math.random() * 750 + 300);
+      const y = parseInt(Math.random() * 750 + 300);
+      const qx = parseInt(Math.random() * 8 + 1);
+      const qy = parseInt(Math.random() * 8 + 1);
+      this.enemies.push( { x, y, qx, qy, shields: 300 } );
+    }
     this.action = ACTION_NONE;
     this.shipLocation = { x: 240, y: 240, qx: 1, qy: 1 };
     this.shipMoving = false;
@@ -139,6 +146,9 @@ class App extends Component {
       this.enemies.forEach( (enemy) => {
         if( enemy.qx === this.shipLocation.qx  &&  enemy.qy === this.shipLocation.qy ) {
           enemy.shields -= laserAmount;
+          if( enemy.shields <= 0 ) {
+            this.setState( { enemies: this.state.enemies - 1 } );
+          }
         }
       })
       this.setState( { lasersDisabled: false } );
@@ -149,6 +159,9 @@ class App extends Component {
         this.enemies.forEach( (enemy) => {
           if( enemy.qx === this.shipLocation.qx  &&  enemy.qy === this.shipLocation.qy ) {
             enemy.shields -= 500;
+            if( enemy.shields <= 0 ) {
+              this.setState( { enemies: this.state.enemies - 1 } );
+            }
           }
         })
       }
