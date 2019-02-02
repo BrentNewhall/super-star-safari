@@ -144,10 +144,15 @@ class App extends Component {
     console.log( "isEnemyDestroyed()" );
     if( enemy.shields <= 0 ) {
       console.log( "yes!" );
-      this.explosions.push( { x: enemy.x, y: enemy.y } );
+      this.explosions.push( { x: enemy.x, y: enemy.y, type: 2, size: '64px' } );
       console.log( this.explosions );
       this.setState( { enemies: this.state.enemies - 1 } );
+      setTimeout( this.removeExplosion, 1000 );
+    }
+    else {
+      this.explosions.push( { x: enemy.x, y: enemy.y, type: 1, size: '25px' } );
       setTimeout( this.removeExplosion, 500 );
+      this.forceUpdate();  
     }
   }
 
@@ -218,8 +223,8 @@ class App extends Component {
   render() {
     console.log( "render(). explosions: " , this.explosions );
     const explosions = this.explosions.map( (explosion) => {
-      const style = { position: 'absolute', left: explosion.x, top: explosion.y };
-      return <img src="/images/explosion1.png" style={style} alt="explosion" key={"explosion"+explosion.x+explosion.y} />;
+      const style = { position: 'absolute', left: explosion.x, top: explosion.y, width: explosion.size, height: explosion.size };
+      return <img src={"/images/explosion" + explosion.type + ".png"} style={style} alt="explosion" key={"explosion"+explosion.x+explosion.y} />;
     });
     const shieldState = (this.state.shieldsUp) ? 'UP' : 'DOWN';
     const shipState = {
