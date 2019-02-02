@@ -34,7 +34,7 @@ class App extends Component {
       this.enemies.push( { x, y, qx, qy, shields: 300 } );
     }
     this.starbases = [];
-    for ( let index = 0; index < 5; index++ ) {
+    for ( let index = 0; index < 7; index++ ) {
       const x = parseInt(Math.random() * 600 + 300);
       const y = parseInt(Math.random() * 600 + 300);
       const qx = parseInt(Math.random() * 8 + 1);
@@ -54,10 +54,13 @@ class App extends Component {
     this.generateScan = this.generateScan.bind( this );
     this.isEnemyDestroyed = this.isEnemyDestroyed.bind( this );
     this.removeExplosion = this.removeExplosion.bind( this );
-    this.findEnemies = this.findEnemies.bind( this );
+    this.findNearby = this.findNearby.bind( this );
     this.movePlayerShip = this.movePlayerShip.bind( this );
   }
 
+  /*
+   * Processes movement of the player ship within the quadrant.
+   */
   spaceClicked( event ) {
     // Ignore if clicking on sidebar or action is pending
     if( event.pageX < 250 )
@@ -80,6 +83,9 @@ class App extends Component {
     this.setState( { torpedoesDisabled: true } );
   }
 
+  /*
+   * Called when the Warp button is clicked.
+   */
   warpClicked(e) {
     this.action = ACTION_WARP;
     this.setState( { warpDisabled: true } );
@@ -109,7 +115,7 @@ class App extends Component {
   }
 
   /*
-   * Returns a scan
+   * Returns a scan of all adjacent quadrants.
    */
   generateScan() {
     //let scan = [];
@@ -118,7 +124,7 @@ class App extends Component {
     let scan = rows.map( (row) => {
       let result = cols.map( (col) => {
         if( row >= 1  &&  row <= 8  &&  col >= 1  &&  col <= 8 ) {
-          const numEnemies = this.findEnemies( row, col );
+          const numEnemies = this.findNearby( row, col );
           if( row === this.shipLocation.qy  &&  col === this.shipLocation.qx ) {
             return <div className="col warp-cell player-cell">{numEnemies}</div>
           }
@@ -135,14 +141,20 @@ class App extends Component {
     return scan;
   }
 
-  findEnemies( row, col ) {
-    const filtered = this.enemies.filter( enemy => {
+  findNearby( row, col ) {
+    const enemyCounts = this.enemies.filter( enemy => {
       if( enemy.qx === col  &&  enemy.qy === row ) {
         return true;
       }
       return false;
     });
-    return filtered.length;
+    const starbaseCounts = this.starbases.filter( base => {
+      if( base.qx === col  &&  base.qy === row ) {
+        return true;
+      }
+      return false;
+    });
+    return enemyCounts.length + starbaseCounts.length;
   }
 
   isEnemyDestroyed( enemy ) {
@@ -252,6 +264,14 @@ class App extends Component {
       else
         return '';
     });
+    let starbases = this.starbases.map( (starbase) => {
+      if( starbase.qx === this.shipLocation.qx  &&  starbase.qy === this.shipLocation.qy ) {
+        const style = { position: 'absolute', left: starbase.x, top: starbase.y, width: 128, height: 128 };
+        return <img src='/images/SS1.png' alt='base' className='base' style={style} />;
+      }
+      else
+        return '';
+    });
     let scan = [];
     if( this.state.showScan ) {
       scan = this.generateScan();
@@ -295,6 +315,7 @@ class App extends Component {
           <button onClick={(e) => this.scanClicked(e)} disabled={this.state.scanDisabled}>Scan</button>
         </div>
         {ship}
+        {starbases}
         {enemies}
         {explosions}
       </div>
